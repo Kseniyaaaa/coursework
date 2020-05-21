@@ -15,7 +15,7 @@ bool isNumberNumeric()
 	}
 }
 
-double getNumber()
+int getNumber()
 {
 	int item;
 	while (true)

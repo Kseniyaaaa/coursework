@@ -1,4 +1,4 @@
 #pragma once
 
 bool isNumberNumeric();
-double getNumber();
+int getNumber();
