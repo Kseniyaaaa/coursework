@@ -17,9 +17,8 @@ struct Participant
 struct Account
 {
 	string login;
-	string password;
 	int access;           // 0 - нет доступа, 1 - есть доступ
 	int role;          // 0 - пользователь, 1 - администратор
-	string hash_password;
+	long long hash_password;
 	string salt;
 };

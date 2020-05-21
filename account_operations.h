@@ -13,3 +13,6 @@ void addAccount(vector<Account> &accounts);
 void editAccount(vector<Account>& accounts);
 void editionMenu(Account& account);
 void deleteAccount(vector<Account>& accounts, Account current_account);
+
+string getSalt();
+long long hashPassword(string password, string salt);

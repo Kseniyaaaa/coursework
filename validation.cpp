@@ -21,15 +21,19 @@ int getNumber()
 	while (true)
 	{
 		cin >> item;
-		if (isNumberNumeric())
+		if (isNumberNumeric() && item >= 0)
 		{
 			break;
+		}
+		else if (item < 0) {
+			cout << "Введите положительное число: ";
 		}
 		else
 		{
 			cout << "Некорректный ввод данных!" << endl;
-			cout << "Введите числовые данные" << endl;
+			cout << "Введите числовые данные: ";
 		}
 	}
+	
 	return item;
 }

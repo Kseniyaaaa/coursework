@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <time.h>
+#include <map>
 
 #include "data_operations.h"
 #include "account_operations.h"
@@ -17,7 +18,6 @@ using namespace std;
 void showData(vector<Participant> records)
 {
 	showHeader();
-
 	for (int i = 0; i < records.size(); i++)
 	{
 		showRecord(records[i]);
@@ -51,8 +51,18 @@ void addRecord(vector<Participant>& records)
 	getline(cin, record->name);
 	cout << "Введите страну, которую он представляет: ";
 	getline(cin, record->country);
+
 	cout << "Введите его/её год рождения: ";
-	record->year = getNumber();
+	while (true) {
+		record->year = getNumber();
+		if (record->year < getCurrentYear()) {
+			break;
+		}
+		else {
+			cout << "Введите правильный год рождения (<" << getCurrentYear() << "): ";
+		}
+	}
+
 	cout << "Введите инструмент, на котором он играет: ";
 	getline(cin, record->instrument);
 	cout << "Введите занятое им/ей место: ";
@@ -68,7 +78,7 @@ void editData(vector<Participant>& records)
 {
 	int i;
 	cout << "Введите номер записи, которую хотите отредактировать: ";
-	i = getNumber();
+	i = getNumber() - 1;
 
 	if (i >= 0 && i < records.size())
 	{
@@ -118,7 +128,15 @@ void editionMenu(Participant& record)
 		case 3:
 			cout << "Измените год рождения: ";
 			cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
-			year = getNumber();
+			while (true) {
+				year = getNumber();
+				if (year < getCurrentYear()) {
+					break;
+				}
+				else {
+					cout << "Введите правильный год рождения (<" << getCurrentYear() << "): ";
+				}
+			}
 			record.year = year;
 			break;
 
@@ -148,15 +166,32 @@ void editionMenu(Participant& record)
 void deleteRecord(vector<Participant>& records)
 {
 	int i;
+	int item;
 	cout << "Введите номер записи, который хотите удалить: ";
-	i = getNumber();
+	i = getNumber() - 1;
 
-	if (i >= 0 && i < records.size())
+	while (i >= 0 && i < records.size())
 	{
-		records.erase(records.begin() + i);
-		writeRecordFile(records);
+		cout << "Вы точно хотите удалить запись?" << endl;
+		cout << "1 - Да" << endl
+			<< "2 - Нет" << endl;
+		cout << "Введите свой ответ: ";
+		item = getNumber();
+		if (item == 1) {
+			records.erase(records.begin() + i);
+			writeRecordFile(records);
+			break;
+		}
+		else if (item == 2) {
+			return;
+		}
+		else {
+			cout << "Введите еще раз." << endl;
+		}
 	}
-	else cout << "Такой записи не существует." << endl;
+	if (i > records.size()) {
+		cout << "Такой записи не существует." << endl;
+	}
 }
 
 
@@ -288,14 +323,17 @@ void showSortingMenu(vector<Participant>& records)
 
 		case 1:
 			sortRecordsByName(records);
+			showData(records);
 			break;
 
 		case 2:
 			sortRecordsByYear(records);
+			showData(records);
 			break;
 
 		case 3:
 			sortRecordsByPlace(records);
+			showData(records);
 			break;
 
 		default:
@@ -308,15 +346,10 @@ void showSortingMenu(vector<Participant>& records)
 
 void sortRecordsByName(vector<Participant>& records)
 {
-	sort(records.begin(), records.end(), SortByName);
-	showHeader();
-	for (int i = 0; i < records.size(); i++)
-	{
-		showRecord(records[i]);
-	}
+	sort(records.begin(), records.end(), sortByName);
 }
 
-bool SortByName(Participant participant_a, Participant participant_b)
+bool sortByName(Participant participant_a, Participant participant_b)
 {
 	return participant_a.name < participant_b.name;
 }
@@ -324,31 +357,26 @@ bool SortByName(Participant participant_a, Participant participant_b)
 
 void sortRecordsByYear(vector<Participant>& records)
 {
-	sort(records.begin(), records.end(), SortByYear); 
-	showHeader();
-	for (int i = 0; i < records.size(); i++)
-	{
-		showRecord(records[i]);
-	}
+	sort(records.begin(), records.end(), sortByYear); 
 }
 
-bool SortByYear(Participant participant_a, Participant participant_b)
+bool sortByYear(Participant participant_a, Participant participant_b)
 {
 	return participant_a.year < participant_b.year;
+}
+
+bool sortByYearDesc(Participant participant_a, Participant participant_b)
+{
+	return participant_a.year > participant_b.year;
 }
 
 
 void sortRecordsByPlace(vector<Participant>& records)
 {
-	sort(records.begin(), records.end(), SortByPlace);
-	showHeader();
-	for (int i = 0; i < records.size(); i++)
-	{
-		showRecord(records[i]);
-	}
+	sort(records.begin(), records.end(), sortByPlace);
 }
 
-bool SortByPlace(Participant participant_a, Participant participant_b)
+bool sortByPlace(Participant participant_a, Participant participant_b)
 {
 	return participant_a.place < participant_b.place;
 }
@@ -357,50 +385,102 @@ bool SortByPlace(Participant participant_a, Participant participant_b)
 void Task(vector<Participant>& records)
 {
 	// По каждому классу музыкальных инструментов вывести список первых трех мест с указанием возраста победителей
-	/*for (int i = 0; i < records.size(); i++)
-	{
-		cout << records[i].year - getCurrentYear() << " лет" << endl;
-	}*/
+	Task1(records);
 
 	// Победители до 12 лет
-	bool flag = false;
+	Task2(records);
+}
 
-	//sortRecordsByYear(records);
+
+void Task1(vector<Participant>& records)
+{
+	map<string, vector<Participant>> list;
 	for (int i = 0; i < records.size(); i++)
 	{
-		if (records[i].year >= 2008) {
-			cout << "Все победители до 12 лет: " << endl;
+		map <string, vector<Participant>> ::iterator it = list.find(records[i].instrument);
+
+		if (it == list.end()) {
+			vector<Participant> v;
+			list[records[i].instrument] = v;
+			list[records[i].instrument].push_back(records[i]);
+		}
+		else {
+			it->second.push_back(records[i]);
+		}
+	}
+
+	for (map <string, vector<Participant>> ::iterator it = list.begin(); it != list.end(); it++)
+	{
+		cout << it->first << endl;
+		sortRecordsByPlace(it->second);
+		showHeader();
+		for (int i = 0; i < it->second.size(); i++)
+		{
+			Participant p = it->second[i];
 			cout << endl;
-			showHeader();
-			sortRecordsByYear(records);
-			cout << " |    " << records[i].name << "     |    "
-				<< records[i].country << "    |    " << records[i].year << "     |       "
-				<< records[i].instrument << "       |    " << records[i].place << "    |" << endl;
+			cout << " |    " << p.name << "     |    "
+				<< p.country << "   |" << p.year << "(" << getCurrentYear() - p.year << " лет/год/а)" << "|       "
+				<< p.instrument << "       |    " << p.place << "    |" << endl;
+			cout << "  ---------------------------------------------------------------------------------------------- " << endl;
+		}
+		cout << endl;
+	}
+}
+
+
+void Task2(vector<Participant>& records)
+{
+	bool flag = false;
+
+	sort(records.begin(), records.end(), sortByYearDesc);
+	cout << "Все победители до 12 лет: " << endl;
+	for (int i = 0; i < records.size(); i++)
+	{
+		if (records[i].year >= getCurrentYear() - 12) {
+			if (!flag) {
+				showHeader();
+			}
+			cout << endl;
+			Participant p = records[i];
+			cout << " |    " << p.name << "     |    "
+				<< p.country << "   |" << p.year << "(" << getCurrentYear() - p.year << " лет/год/а)" << "|       "
+				<< p.instrument << "       |    " << p.place << "    |" << endl;
 			cout << "  ---------------------------------------------------------------------------------------------- " << endl;
 			flag = true;
 		}
-		else {
-			break;
-		}
 	}
 	if (!flag) {
-		cout << "Такого участника нет." << endl;
+		cout << "Таких участников нет." << endl;
 	}
 }
 
 
 void deleteData(vector<Participant>& records)
 {
-	records.clear();
-	writeRecordFile(records);
+	int item;
+	cout << "Вы точно хотите очистить все данные?" << endl;
+		cout << "1 - Да" << endl
+			<< "2 - Нет" << endl;
+		cout << "Введите свой ответ: ";
+	item = getNumber();
+	if (item == 1) {
+		records.clear();
+		writeRecordFile(records);
+	}
+	else if (item == 2) {
+		return;
+	}
+	else {
+		cout << "Введите еще раз." << endl;
+	}
 }
 
 
-//int getCurrentYear()
-//{
-//	struct tm localtime;
-//	time_t now = time(NULL);
-//	localtime_s(&localtime, &now);
-//
-//	return 1900 + localtime.tm_year; // tm_year: years since 1900
-//}
+int getCurrentYear()
+{
+	struct tm localtime;
+	time_t now = time(NULL);
+	localtime_s(&localtime, &now);
+
+	return 1900 + localtime.tm_year;
+}

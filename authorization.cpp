@@ -11,8 +11,6 @@
 
 using namespace std;
 
-
-
 void showAccountsMenu()
 {
 	cout << "Авторизация: " << endl
@@ -68,7 +66,7 @@ void login(vector<Account> &accounts, vector<Participant>& records)
 		cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
 		return;
 	}
-	else if (account->password != password) {
+	else if (account->hash_password != hashPassword(password, account->salt)) {
 		cout << "Проверьте введенный пароль." << endl;
 		cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
 		return;
@@ -99,7 +97,18 @@ void registration(vector<Account> &accounts)
 {
 	string login, password, password2;
 	cout << "Введите логин: " << endl;
-	cin >> login;
+	while (true) {
+		cin >> login;
+		Account* account = getAccount(accounts, login);
+		if (account == NULL) {
+			break;
+		}
+		else {
+			cout << "Аккаунт с таким логином уже существует." << endl;
+			cout << "Введите другой логин: " << endl;
+		}
+	}
+
 	do {
 		cout << "Введите пароль: ";
 		password = transformPassword();
@@ -108,12 +117,14 @@ void registration(vector<Account> &accounts)
 	} while (password != password2);
 
 	Account* account = new Account;
+	account->salt = getSalt();
 	account->login = login;
-	account->password = password;
+	account->hash_password = hashPassword(password, account->salt);
 	account->role = 0;
 	account->access = 0;
 
 	accounts.push_back(*account);
+	writeToEndAccountFile(*account);
 }
 
 
@@ -148,14 +159,3 @@ string transformPassword()
 	return password;
 }
 
-
-//void hashPassword(Account account)
-//{
-//	const int p = 33;
-//	long long hash = 0, p_pow = 1;
-//	for (size_t i = 0; i < account.password.length(); ++i)
-//	{
-//		hash += (account.password[i] - 'a' + 1) * p_pow;
-//		p_pow *= p;
-//	}
-//}

@@ -12,4 +12,3 @@ void login(vector<Account> &accounts, vector<Participant>& records);
 void registration(vector<Account> &accounts);
 
 string transformPassword();
-//void hashPassword(Account account);

@@ -24,7 +24,8 @@ vector<Account> readAccountsFile()
 		{
 			Account* account = new Account;
 			fin >> account->login
-				>> account->password
+				>> account->hash_password
+				>> account->salt
 				>> account->role
 				>> account->access;
 			accounts.push_back(*account);
@@ -41,9 +42,10 @@ void writeAccountFile(vector<Account> accounts)
 	for (int i = 0; i < accounts.size(); i++)
 	{
 		fout << accounts[i].login << " "
-			<< accounts[i].password << " "
+			<< accounts[i].hash_password << " "
+			<< accounts[i].salt << " "
 			<< accounts[i].role << " "
-			<< accounts[i].access << endl;
+			<< accounts[i].access;
 		if (i < accounts.size() - 1)
 		{
 			fout << endl;
@@ -56,10 +58,11 @@ void writeAccountFile(vector<Account> accounts)
 void writeToEndAccountFile(Account account)
 {
 	ofstream fadd(FILE_OF_ACCOUNTS, ios::app);
-	fadd << endl;
 	fadd << account.login << " "
-		<< account.password << " "
-		<< account.role;
+		<< account.hash_password << " "
+		<< account.salt << " "
+		<< account.role << " "
+		<< account.access << endl;
 	fadd.close();
 }
 
@@ -98,7 +101,7 @@ void writeRecordFile(vector<Participant> records)
 		fout << records[i].country << endl;
 		fout << records[i].year << endl;
 		fout << records[i].instrument << endl;
-		fout << records[i].place << endl;
+		fout << records[i].place;
 		if (i < records.size() - 1)
 		{
 			fout << endl;
@@ -111,7 +114,6 @@ void writeRecordFile(vector<Participant> records)
 void writeToEndRecordsFile(Participant record)
 {
 	ofstream fadd(FILE_OF_RECORDS, ios::app);
-	fadd << endl;
 	fadd << record.name << " "
 		<< record.country << " "
 		<< record.year << " "

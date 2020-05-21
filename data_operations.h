@@ -19,13 +19,17 @@ void findRecordByPlace(vector<Participant>& records);
 
 void showSortingMenu(vector<Participant>& records);
 void sortRecordsByName(vector<Participant>& records);
-bool SortByName(Participant participant_a, Participant participant_b);
+bool sortByName(Participant participant_a, Participant participant_b);
 void sortRecordsByYear(vector<Participant>& records);
-bool SortByYear(Participant participant_a, Participant participant_b);
+bool sortByYear(Participant participant_a, Participant participant_b);
+bool sortByYearDesc(Participant participant_a, Participant participant_b);
 void sortRecordsByPlace(vector<Participant>& records);
-bool SortByPlace(Participant participant_a, Participant participant_b);
+bool sortByPlace(Participant participant_a, Participant participant_b);
 
 void Task(vector<Participant>& records);
+void Task1(vector<Participant>& records);
+void Task2(vector<Participant>& records);
+
 void deleteData(vector<Participant>& records);
 
-//int getCurrentYear();
+int getCurrentYear();

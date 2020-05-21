@@ -8,6 +8,7 @@
 #include "structures.h"
 
 const string FILE_OF_ACCOUNTS = "accounts.txt";
+const int SALT_LENGTH = 7;
 
 
 Account* getAccount(vector<Account> &accounts, string login)
@@ -27,15 +28,17 @@ Account* createFirstAdmin()
 {
 	Account* account = new Account;
 	account->login = "admin";
-	account->password = "admin";
+	account->salt = getSalt();
+	account->hash_password = hashPassword("admin", account->salt);
 	account->role = 1;
 	account->access = 1;
 
 	ofstream fout(FILE_OF_ACCOUNTS, ios::out);
 	fout << account->login << " "
-		<< account->password << " "
+		<< account->hash_password << " "
+		<< account->salt << " "
 		<< account->role << " "
-		<< account->access << endl;
+		<< account->access;
 	fout.close();
 	return account;
 }
@@ -75,13 +78,16 @@ void showAccount(vector<Account> accounts)
 
 void addAccount(vector<Account> &accounts)
 {
+	string password;
 	Account* account = new Account;
 	account->access = 1;
+	account->salt = getSalt();
 
 	cout << "Введите логин: " << endl;
 	cin >> account->login;
 	cout << "Введите пароль: " << endl;
-	cin >> account->password;
+	cin >> password;
+	account->hash_password = hashPassword(password, account->salt);
 	cout << "Пользователь(0) или администратор(1)? : ";
 	account->role = getNumber();
 
@@ -94,7 +100,7 @@ void editAccount(vector<Account>& accounts)
 {
 	int i;
 	cout << "Введите номер аккаунта, который хотите отредактировать: ";
-	i = getNumber();
+	i = getNumber() - 1;
 
 	if (i >= 0 && i < accounts.size())
 	{
@@ -134,18 +140,18 @@ void editionMenu(Account& account)
 		case 2:
 			cout << "Введите новый пароль: ";
 			cin >> password;
-			account.password = password;
+			account.hash_password = hashPassword(password, account.salt);
 			break;
 
 		case 3:
 			cout << "Измените роль: ";
-			cin >> role;
+			role = getNumber();
 			account.role = role;
 			break;
 
 		case 4:
 			cout << "Измените доступ: ";
-			cin >> access;
+			access = getNumber();
 			account.access = access;
 			break;
 
@@ -160,19 +166,62 @@ void editionMenu(Account& account)
 void deleteAccount(vector<Account>& accounts, Account current_account)
 {
 	int i;
+	int item;
 	cout << "Введите номер аккаунта, который хотите удалить: ";
-	i = getNumber();
+	i = getNumber() - 1;
 	
-	if (i >= 0 && i < accounts.size())
+	while (i >= 0 && i < accounts.size())
 	{
 		if (current_account.login == accounts[i].login)
 		{
 			cout << "Ваш аккаунт не может быть удален." << endl;
 		}
 		else {
-			accounts.erase(accounts.begin() + i);
-			writeAccountFile(accounts);
+			cout << "Вы точно хотите удалить аккаунт?" << endl;
+			cout << "1 - Да" << endl
+				<< "2 - Нет" << endl;
+			cout << "Введите свой ответ: ";
+			item = getNumber();
+			if (item == 1) {
+				accounts.erase(accounts.begin() + i);
+				writeAccountFile(accounts);
+				break;
+			}
+			else if (item == 2) {
+				return;
+			}
+			else {
+				cout << "Введите еще раз." << endl;
+			}
 		}
 	}
-	else cout << "Такого аккаунта не существует." << endl;
+	if (i > accounts.size()) {
+		cout << "Такого аккаунта не существует." << endl;
+	}
+}
+
+
+string getSalt() {
+	string alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	string salt = "";
+	for (int i = 0; i < SALT_LENGTH; ++i) {
+		salt += alphabet[rand() % (sizeof(alphabet) - 1)];
+	}
+
+	return salt;
+}
+
+
+long long int hashPassword(string password, string salt)
+{
+	string password_with_salt = password + salt;
+	const int p = 33;
+	long long hash = 0, p_pow = 1;
+	for (size_t i = 0; i < password_with_salt.length(); ++i)
+	{
+		hash = (hash + ((int)password_with_salt[i] - (int)'a' + 1) * p_pow) % LONG_MAX;
+		p_pow *= p;
+	}
+
+	return hash;
 }
