@@ -93,6 +93,7 @@ void addAccount(vector<Account> &accounts)
 
 	accounts.push_back(*account);
 	writeToEndAccountFile(*account);
+	cout << "Аккаунт успешно добавлен!" << endl;
 }
 
 
@@ -106,8 +107,9 @@ void editAccount(vector<Account>& accounts)
 	{
 		editionMenu(accounts[i]);
 		writeAccountFile(accounts);
+		cout << "Аккаунт успешно отредактирован!" << endl;
 	}
-	else cout << "Такого акканута не существует." << endl;
+	else cout << "Такого аккаунта не существует." << endl;
 }
 
 
@@ -175,6 +177,7 @@ void deleteAccount(vector<Account>& accounts, Account current_account)
 		if (current_account.login == accounts[i].login)
 		{
 			cout << "Ваш аккаунт не может быть удален." << endl;
+			break;
 		}
 		else {
 			cout << "Вы точно хотите удалить аккаунт?" << endl;
@@ -185,6 +188,7 @@ void deleteAccount(vector<Account>& accounts, Account current_account)
 			if (item == 1) {
 				accounts.erase(accounts.begin() + i);
 				writeAccountFile(accounts);
+				cout << "Аккаунт успешно удален!" << endl;
 				break;
 			}
 			else if (item == 2) {

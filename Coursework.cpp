@@ -1,8 +1,6 @@
 #include "authorization.h"
 #include "account_operations.h"
 #include "file_operations.h"
-#include "administrator.h"
-#include "user.h"
 #include "structures.h"
 
 #include <iostream>
@@ -24,4 +22,3 @@ int main()
 
 	system("pause");
 }
-

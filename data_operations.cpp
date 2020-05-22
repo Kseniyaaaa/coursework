@@ -71,6 +71,7 @@ void addRecord(vector<Participant>& records)
 
 	records.push_back(*record);
 	writeToEndRecordsFile(*record);
+	cout << "Запись успешно добавлена!" << endl;
 }
 
 
@@ -84,6 +85,7 @@ void editData(vector<Participant>& records)
 	{
 		editionMenu(records[i]);
 		writeRecordFile(records);
+		cout << "Запись успешно отредактирована!" << endl;
 	}
 	else cout << "Такой записи не существует." << endl;
 }
@@ -180,6 +182,7 @@ void deleteRecord(vector<Participant>& records)
 		if (item == 1) {
 			records.erase(records.begin() + i);
 			writeRecordFile(records);
+			cout << "Запись успешно удалена!" << endl;
 			break;
 		}
 		else if (item == 2) {
@@ -466,6 +469,7 @@ void deleteData(vector<Participant>& records)
 	if (item == 1) {
 		records.clear();
 		writeRecordFile(records);
+		cout << "Данные успешно удалены!" << endl;
 	}
 	else if (item == 2) {
 		return;

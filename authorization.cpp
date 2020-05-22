@@ -125,6 +125,7 @@ void registration(vector<Account> &accounts)
 
 	accounts.push_back(*account);
 	writeToEndAccountFile(*account);
+	cout << "Регистрация выполнена успешно!" << endl;
 }
 
 
