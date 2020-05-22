@@ -115,7 +115,6 @@ void editionMenu(Participant& record)
 		case 1:
 			cout << "Введите ФИО: " << endl;
 			record.name = name;
-			cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
 			getline(cin, record.name);
 			break;
 
@@ -242,15 +241,16 @@ void findRecordByName(vector<Participant>& records)
 	int i;
 	string name;
 	cout << "Введите ФИО искомого участника: ";
-	cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
 	getline(cin, name);
 	bool flag = false;
 
 	for (i = 0; i < records.size(); i++)
 	{
+		if (!flag) {
+			showHeader();
+		}
 		if (records[i].name.find(name) != string::npos)
 		{
-			showHeader();
 			showRecord(records[i]);
 			flag = true;
 		}
@@ -270,9 +270,11 @@ void findRecordByYear(vector<Participant>& records)
 
 	for (i = 0; i < records.size(); i++)
 	{
+		if (!flag) {
+			showHeader();
+		}
 		if (year == records[i].year)
 		{
-			showHeader();
 			showRecord(records[i]);
 			flag = true;
 		}
@@ -292,9 +294,11 @@ void findRecordByPlace(vector<Participant>& records)
 
 	for (i = 0; i < records.size(); i++)
 	{
+		if (!flag) {
+			showHeader();
+		}
 		if (place == records[i].place)
 		{
-			showHeader();
 			showRecord(records[i]);
 			flag = true;
 		}

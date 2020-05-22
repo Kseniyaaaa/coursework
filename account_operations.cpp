@@ -6,6 +6,7 @@
 #include "file_operations.h"
 #include "validation.h"
 #include "structures.h"
+#include "authorization.h"
 
 const string FILE_OF_ACCOUNTS = "accounts.txt";
 const int SALT_LENGTH = 7;
@@ -86,7 +87,7 @@ void addAccount(vector<Account> &accounts)
 	cout << "Введите логин: " << endl;
 	cin >> account->login;
 	cout << "Введите пароль: " << endl;
-	cin >> password;
+	password = transformPassword();
 	account->hash_password = hashPassword(password, account->salt);
 	cout << "Пользователь(0) или администратор(1)? : ";
 	account->role = getNumber();
